@@ -17,6 +17,7 @@ category_vars = [
 ]
 grouping_vars = ['treatment', 'Gender', 'family_history']
 
+# Descriptive title mapping
 title_map = {
     'anonymity': "Is mental health support anonymous?",
     'remote_work': "Do you work remotely?",
@@ -58,7 +59,7 @@ if x_col and group_col:
             text=f"{title_map.get(x_col, x_col)} grouped by {group_col}",
             x=0.5,
             xanchor="center",
-            font=dict(size=20, color='black')  # 🔧 force black title
+            font=dict(size=20, color='black')
         ),
         xaxis=dict(
             title=x_col,
@@ -73,15 +74,14 @@ if x_col and group_col:
             tickfont=dict(color='black')
         ),
         legend=dict(
-            title=group_col,
-            font=dict(color='black'),           # 🔧 legend font
-            title_font=dict(color='black')      # 🔧 legend title
+            title=dict(text=group_col, font=dict(color='black')),
+            font=dict(color='black')
         ),
         barmode='group',
         bargap=0.2,
         plot_bgcolor='white',
         paper_bgcolor='white',
-        font=dict(color='black')  # 🔧 fallback for any missed text
+        font=dict(color='black')
     )
 
     st.plotly_chart(fig, use_container_width=True)
