@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 # Load dataset
 df = pd.read_csv("cleaned_data.csv")
 
-# Page setup
+# Page config
 st.set_page_config(page_title="Grouped Bar Chart Dashboard", layout="centered")
 st.title("📊 Mental Health Survey - Grouped Bar Chart Analysis")
 
@@ -17,7 +17,7 @@ category_vars = [
 ]
 grouping_vars = ['treatment', 'Gender', 'family_history']
 
-# Descriptive title mapping
+# Custom labels
 title_map = {
     'anonymity': "Is mental health support anonymous?",
     'remote_work': "Do you work remotely?",
@@ -37,22 +37,17 @@ title_map = {
 x_col = st.selectbox("Select a category variable (X-axis):", category_vars)
 group_col = st.selectbox("Select a grouping variable (color legend):", grouping_vars)
 
-# Plotting
+# Plot
 if x_col and group_col:
     temp = df[[x_col, group_col]].dropna()
     grouped = temp.groupby([x_col, group_col]).size().reset_index(name='Count')
-
     categories = sorted(temp[x_col].unique())
 
     fig = go.Figure()
 
-    for group_val in grouped[group_col].unique():
-        subset = grouped[grouped[group_col] == group_val]
-        fig.add_bar(
-            x=subset[x_col],
-            y=subset['Count'],
-            name=str(group_val)
-        )
+    for val in grouped[group_col].unique():
+        subset = grouped[grouped[group_col] == val]
+        fig.add_bar(x=subset[x_col], y=subset['Count'], name=str(val))
 
     fig.update_layout(
         title=dict(
@@ -61,27 +56,25 @@ if x_col and group_col:
             xanchor="center",
             font=dict(size=20, color='black')
         ),
+        xaxis_title=x_col,
+        yaxis_title="Count",
         xaxis=dict(
-            title=x_col,
             categoryorder='array',
             categoryarray=categories,
-            titlefont=dict(color='black'),
             tickfont=dict(color='black')
         ),
         yaxis=dict(
-            title="Count",
-            titlefont=dict(color='black'),
             tickfont=dict(color='black')
         ),
         legend=dict(
             title=dict(text=group_col, font=dict(color='black')),
             font=dict(color='black')
         ),
-        barmode='group',
-        bargap=0.2,
+        font=dict(color='black'),
         plot_bgcolor='white',
         paper_bgcolor='white',
-        font=dict(color='black')
+        barmode='group',
+        bargap=0.2
     )
 
     st.plotly_chart(fig, use_container_width=True)
