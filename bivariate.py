@@ -56,14 +56,16 @@ if x_col and group_col:
             xanchor="center",
             font=dict(size=20, color='black')
         ),
-        xaxis_title=x_col,
-        yaxis_title="Count",
         xaxis=dict(
+            title=x_col,
+            titlefont=dict(color='black'),   # ✅ Added this line
+            tickfont=dict(color='black'),
             categoryorder='array',
-            categoryarray=categories,
-            tickfont=dict(color='black')
+            categoryarray=categories
         ),
         yaxis=dict(
+            title="Count",
+            titlefont=dict(color='black'),   # ✅ Added this line
             tickfont=dict(color='black')
         ),
         legend=dict(
