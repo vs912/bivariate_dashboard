@@ -1,15 +1,15 @@
 import streamlit as st
 import pandas as pd
-import plotly.graph_objects as go
+import plotly.express as px
 
 # Load dataset
 df = pd.read_csv("cleaned_data.csv")
 
-# Page config
-st.set_page_config(page_title="Grouped Bar Chart Dashboard", layout="centered")
-st.title("📊 Mental Health Survey - Grouped Bar Chart Analysis")
+# Streamlit config
+st.set_page_config(page_title="Bivariate Dashboard", layout="centered")
+st.title("📊 Mental Health Survey – Bivariate Analysis")
 
-# Variables
+# Dropdown variables
 category_vars = [
     'anonymity', 'remote_work', 'tech_company', 'wellness_program', 'care_options',
     'mental_health_interview', 'phys_health_interview', 'coworkers', 'supervisor',
@@ -17,7 +17,7 @@ category_vars = [
 ]
 grouping_vars = ['treatment', 'Gender', 'family_history']
 
-# Custom labels
+# Custom labels for titles
 title_map = {
     'anonymity': "Is mental health support anonymous?",
     'remote_work': "Do you work remotely?",
@@ -33,50 +33,31 @@ title_map = {
     'leave': "Comfort taking mental health leave?"
 }
 
-# Dropdowns
-x_col = st.selectbox("Select a category variable (X-axis):", category_vars)
-group_col = st.selectbox("Select a grouping variable (color legend):", grouping_vars)
+# Dropdown selectors
+x_col = st.selectbox("Select a category (X-axis):", category_vars)
+group_col = st.selectbox("Group by:", grouping_vars)
 
-# Plot
+# Generate chart
 if x_col and group_col:
     temp = df[[x_col, group_col]].dropna()
-    grouped = temp.groupby([x_col, group_col]).size().reset_index(name='Count')
-    categories = sorted(temp[x_col].unique())
 
-    fig = go.Figure()
-
-    for val in grouped[group_col].unique():
-        subset = grouped[grouped[group_col] == val]
-        fig.add_bar(x=subset[x_col], y=subset['Count'], name=str(val))
+    fig = px.histogram(
+        temp,
+        x=x_col,
+        color=group_col,
+        barmode='group',
+        text_auto=True,
+        color_discrete_sequence=px.colors.qualitative.Set2,
+        title=f"{title_map.get(x_col, x_col)} grouped by {group_col}"
+    )
 
     fig.update_layout(
-        title=dict(
-            text=f"{title_map.get(x_col, x_col)} grouped by {group_col}",
-            x=0.5,
-            xanchor="center",
-            font=dict(size=20, color='black')
-        ),
-        xaxis=dict(
-            title=x_col,
-            titlefont=dict(color='black'),   # ✅ Added this line
-            tickfont=dict(color='black'),
-            categoryorder='array',
-            categoryarray=categories
-        ),
-        yaxis=dict(
-            title="Count",
-            titlefont=dict(color='black'),   # ✅ Added this line
-            tickfont=dict(color='black')
-        ),
-        legend=dict(
-            title=dict(text=group_col, font=dict(color='black')),
-            font=dict(color='black')
-        ),
-        font=dict(color='black'),
+        xaxis_title=x_col,
+        yaxis_title="Count",
+        title_x=0.5,
+        font=dict(size=14),
         plot_bgcolor='white',
-        paper_bgcolor='white',
-        barmode='group',
-        bargap=0.2
+        paper_bgcolor='white'
     )
 
     st.plotly_chart(fig, use_container_width=True)
